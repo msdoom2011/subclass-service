@@ -1,7 +1,7 @@
 var app = Subclass.createModule("app", {
-    services: {
-        foo_service: {
-            className: ""
-        }
-    }
+    //services: {
+    //    foo_service: {
+    //        className: ""
+    //    }
+    //}
 });

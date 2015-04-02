@@ -9,6 +9,11 @@ Subclass.Service = {};
 Subclass.Service.Error = {};
 
 /**
+ * @namespace
+ */
+Subclass.Service.Extension = {};
+
+/**
  * @class
  * @constructor
  * @description
@@ -17,9 +22,9 @@ Subclass.Service.Error = {};
  * It allows to register new service, create and get service instances, get its definitions.
  *
  * @throws {Error}
- *      Throws error if specified module is not instance of Subclass.Module.Module class
+ *      Throws error if specified module is not instance of Subclass.Module class
  *
- * @param {Subclass.Module.Module} module
+ * @param {Subclass.Module} module
  *      The module instance
  */
 Subclass.Service.ServiceManager = (function()
@@ -29,11 +34,11 @@ Subclass.Service.ServiceManager = (function()
      */
     function ServiceManager(module)
     {
-        if (!module || !(module instanceof Subclass.Module.Module)) {
+        if (!module || !(module instanceof Subclass.Module)) {
             Subclass.Error.create('InvalidArgument')
                 .argument("the instance of module", false)
                 .received(module)
-                .expected("an instance of Subclass.Module.Module")
+                .expected("an instance of Subclass.Module")
                 .apply()
             ;
         }
@@ -41,7 +46,7 @@ Subclass.Service.ServiceManager = (function()
         /**
          * Instance of module
          *
-         * @type {Subclass.Module.Module}
+         * @type {Subclass.Module}
          * @private
          */
         this._module = module;
@@ -97,7 +102,7 @@ Subclass.Service.ServiceManager = (function()
      *
      * @method getModule
      * @memberOf Subclass.Service.ServiceManager.prototype
-     * @returns {Subclass.Module.Module}
+     * @returns {Subclass.Module}
      */
     ServiceManager.prototype.getModule = function()
     {
@@ -161,7 +166,7 @@ Subclass.Service.ServiceManager = (function()
      * }
      * ...
      *
-     * // The same definitions after normalization
+     * // Will be converted to format:
      *
      * var moduleConfis = {
      *      services: {
