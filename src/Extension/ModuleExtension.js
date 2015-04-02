@@ -90,10 +90,8 @@ Subclass.Service.Extension.ModuleExtension = function() {
     //======================== REGISTERING EXTENSION ==========================
     //=========================================================================
 
-    Subclass.Module.onInitializeBefore(function (evt, module)
+    Subclass.Module.onInitializeBefore(function(evt, modulodule)
     {
-        Module = Subclass.Tools.buildClassConstructor(Module);
-
         if (!Module.hasExtension(ModuleExtension)) {
             Module.registerExtension(ModuleExtension);
         }
