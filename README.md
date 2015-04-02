@@ -1,0 +1,1 @@
+The plugin for SubclassJS framework which brings ability to define services using dependency injection and defining tagged services which extremely convenient use for services with extendable functionality
