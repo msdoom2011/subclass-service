@@ -71,6 +71,20 @@ Subclass.Service.Extension.ModuleAPIExtension = function() {
         );
     };
 
+    /**
+     * The same as the {@link Subclass.Service.ServiceManager#issetService}
+     *
+     * @method issetService
+     * @memberOf Subclass.ModuleAPI.prototype
+     */
+    ModuleAPI.prototype.issetService = function()
+    {
+        return this.getModule().getServiceManager().issetService.apply(
+            this.getModule().getServiceManager(),
+            arguments
+        );
+    };
+
 
     //=========================================================================
     //======================== REGISTERING EXTENSION ==========================

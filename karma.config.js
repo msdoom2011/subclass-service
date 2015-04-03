@@ -18,10 +18,15 @@ module.exports = function(config) {
 
       // Src Files
       "vendors/subclass.js",
+      "vendors/subclass-parameter.js",
       "src/ServiceManager.js",
       "src/**/*.js",
 
       // Tests
+      "tests/plugs/app-first-plugin.js",
+      "tests/plugs/app-forth-plugin.js",
+      "tests/plugs/app-third-plugin.js",
+      "tests/plugs/app-second-plugin.js",
       "tests/app/app.js",
       "tests/app/**/*.js",
       "tests/main.js",

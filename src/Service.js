@@ -604,7 +604,35 @@ Subclass.Service.Service = (function()
      */
     Service.prototype.getClassName = function()
     {
-        return this.getDefinition().className;
+
+        //console.log(this.getDefinition().className);
+        //console.log(this.getServiceManager().getModule().getParameterManager().getParameter('searchClass'));
+        //console.log(this.normalizeClassName(this.getDefinition().className));
+        //console.log('----------');
+
+        return this.normalizeClassName(this.getDefinition().className);
+    };
+
+    /**
+     * Normalizes name of service class
+     *
+     * @param {string} className
+     *      The name of service class
+     *
+     * @returns {string}
+     */
+    Service.prototype.normalizeClassName = function(className)
+    {
+        var paramRegExp = /%([^%]+)%/i;
+
+        if (paramRegExp.test(className)) {
+            var paramManager = this.getServiceManager().getModule().getParameterManager();
+            var paramName = className.match(paramRegExp)[1];
+            var param = paramManager.getParameter(paramName);
+
+            className = className.replace(paramRegExp, param);
+        }
+        return className;
     };
 
     /**

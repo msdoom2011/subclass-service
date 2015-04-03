@@ -252,7 +252,7 @@ Subclass.Service.ServiceManager = (function()
     ServiceManager.prototype.getServices = function(privateServices)
     {
         var mainModule = this.getModule();
-        var moduleManager = mainModule.getModuleManager();
+        var moduleStorage = mainModule.getModuleStorage();
         var serviceDefinitions = {};
         var $this = this;
 
@@ -263,7 +263,7 @@ Subclass.Service.ServiceManager = (function()
             return this._services;
         }
 
-        moduleManager.eachModule(function(module) {
+        moduleStorage.eachModule(function(module) {
             if (module == mainModule) {
                 Subclass.Tools.extend(serviceDefinitions, $this._services);
                 return;
@@ -332,7 +332,8 @@ Subclass.Service.ServiceManager = (function()
         var classManager = this.getModule().getClassManager();
 
         if (serviceDefinition.className) {
-            classManager.loadClass(serviceDefinition.className);
+            var className = service.normalizeClassName(serviceDefinition.className);
+            classManager.loadClass(className);
         }
 
         return service;
