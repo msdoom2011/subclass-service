@@ -1,10 +1,10 @@
 var app = Subclass.createModule("app", ['appFirstPlugin'], {
     parameters: {
+        mode: "dev",
         engine: "mysql",
         searchClass: "Search/SearchService",
         searchFailEngine: "Search/Engine/FailEngine",
         searchMysqlEngine: "Search/Engine/MysqlEngine",
-        searchSolrEngine: "Search/Engine/SolrEngine",
         searchSphinxEngine: "Search/Engine/SphinxEngine",
         mySearchClass: "Custom/MySearch"
     },
@@ -24,10 +24,6 @@ var app = Subclass.createModule("app", ['appFirstPlugin'], {
         search_mysql_engine: {
             extends: "search_engine",
             className: "%searchMysqlEngine%"
-        },
-        search_solr_engine: {
-            extends: "search_engine",
-            className: "%searchSolrEngine%"
         },
         search_sphinx_engine: {
             extends: "search_engine",

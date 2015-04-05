@@ -245,11 +245,15 @@ Subclass.Service.ServiceManager = (function()
      *      If passed true it returns services only from current module
      *      without services from its plug-ins.
      *
+     * @param {boolean} [withParentServices=true]
+     *      Should or not will be returned the services from the parent
+     *      modules (it is actual if the current module is a plug-in)
+     *
      * @returns {Object.<Subclass.Service.Service>}
      *      Returns the plain object which keys are the service names
      *      and values are the service definitions.
      */
-    ServiceManager.prototype.getServices = function(privateServices)
+    ServiceManager.prototype.getServices = function(privateServices, withParentServices)
     {
         var mainModule = this.getModule();
         var moduleStorage = mainModule.getModuleStorage();
@@ -259,17 +263,28 @@ Subclass.Service.ServiceManager = (function()
         if (privateServices !== true) {
             privateServices = false;
         }
-        if (privateServices) {
+        if (withParentServices !== false) {
+            withParentServices = true;
+        }
+
+        // Returning services from current module with parameters from its parent modules
+
+        if (withParentServices && !mainModule.isRoot() && arguments[2] != mainModule) {
+            return mainModule.getRoot().getServiceManager().getServices(false, false, mainModule);
+
+        // Returning services from current module (without its plug-ins)
+
+        } else if (privateServices) {
             return this._services;
         }
 
         moduleStorage.eachModule(function(module) {
             if (module == mainModule) {
-                Subclass.Tools.extend(serviceDefinitions, $this._services);
+                Subclass.Tools.extend(serviceDefinitions, $this.getServices(true, false));
                 return;
             }
             var moduleServiceManager = module.getServiceManager();
-            var moduleServices = moduleServiceManager.getServices();
+            var moduleServices = moduleServiceManager.getServices(false, false);
 
             Subclass.Tools.extend(serviceDefinitions, moduleServices);
         });
@@ -359,7 +374,9 @@ Subclass.Service.ServiceManager = (function()
         if (!this.issetService(serviceName)) {
             Subclass.Error.create('Service with name "' + serviceName + '" is not exists.');
         }
-        return this.getServiceFactory().getService(this.getServices()[serviceName]);
+        var serviceDef = this.getServices()[serviceName];
+
+        return this.getServiceFactory().getService(serviceDef);
     };
 
     /**

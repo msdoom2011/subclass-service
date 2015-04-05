@@ -20,6 +20,7 @@ describe("Checking services", function() {
     it ("creation", function() {
         var search = app.getService('search');
         var searchAnother = app.getService('search');
+        expect(search.getMode()).toBe('dev');
 
         expect(search == searchAnother).toBe(true);
         expect(search.isError()).toBe(true);
@@ -41,6 +42,9 @@ describe("Checking services", function() {
 
         var mySearch = app.getService('my_search');
         expect(mySearch.search(['word'])).toBe('Search words "word" using engine "solr". (custom search)');
+
+        var myMysqlEngine = search.getEngine('mysql');
+        expect(myMysqlEngine.getMode()).toBe('dev');
     });
 
     it ("not allowed actions", function() {

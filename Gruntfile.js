@@ -116,7 +116,7 @@ module.exports = function(grunt) {
         "copy:release_readme",
         "concat:release",
         "uglify:release",
-        //"karma:release"
+        "karma:release"
     ]);
 
     grunt.registerTask("doc", [
