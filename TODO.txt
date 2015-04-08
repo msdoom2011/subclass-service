@@ -2,7 +2,7 @@
 TODO List
 --------------------------------------------------------
 
-1. Add ability to perform service manipulation code before any service was initializedx
+1. Add ability to perform service manipulation code before any service was initialized
 
 2. Add ability to create alias for registered services.
 
