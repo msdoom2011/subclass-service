@@ -322,6 +322,7 @@ Subclass.Service.Service = (function()
 
     /**
      * Initializes service.<br /><br />
+     *
      * In this stage the service configuration will be validated and performed.<br />
      * It method should be invoked once before the service instance will be created.
      *
@@ -332,6 +333,26 @@ Subclass.Service.Service = (function()
     {
         this.validateDefinition();
         this.processDefinition();
+    };
+
+    /**
+     * Renames current service
+     *
+     * @method rename
+     * @memberOf Subclass.Service.Service.prototype
+     *
+     * @param {string} name
+     *      The new name of current service
+     */
+    Service.prototype.rename = function(name)
+    {
+        var serviceModule = this.getServiceManager().getServiceLocation(this.getName());
+        var serviceManager = serviceModule.getServiceManager();
+        var services = serviceManager.getServices(true);
+
+        delete services[this.getName()];
+        services[name] = this;
+        this._name = name;
     };
 
     /**
@@ -604,12 +625,6 @@ Subclass.Service.Service = (function()
      */
     Service.prototype.getClassName = function()
     {
-
-        //console.log(this.getDefinition().className);
-        //console.log(this.getServiceManager().getModule().getParameterManager().getParameter('searchClass'));
-        //console.log(this.normalizeClassName(this.getDefinition().className));
-        //console.log('----------');
-
         return this.normalizeClassName(this.getDefinition().className);
     };
 
@@ -691,6 +706,38 @@ Subclass.Service.Service = (function()
     };
 
     /**
+     * Allows to pass needed argument to needed index
+     * to service class constructor function when it is created
+     *
+     * @method addArgument
+     * @memberOf Subclass.Service.Service.prototype
+     *
+     * @param {number} argIndex
+     *      The index of argument place in list of service class constructor arguments
+     *
+     * @param {*} argValue
+     *      The argument value
+     */
+    Service.prototype.addArgument = function(argIndex, argValue)
+    {
+        if (this.isInitialized()) {
+            Subclass.Error.create('ServiceInitialized')
+                .service(this.getName())
+                .apply()
+            ;
+        }
+        if (typeof argIndex != 'number') {
+            Subclass.Error.create('InvalidArgument')
+                .argument('the index of new service constructor argument', false)
+                .expect('a number')
+                .received(argIndex)
+                .apply()
+            ;
+        }
+        this.getDefinition().arguments[argIndex] = argValue;
+    };
+
+    /**
      * Normalizes the arguments array.<br /><br />
      *
      * Defining the service it is possible to specify in arguments for class constructor
@@ -714,7 +761,6 @@ Subclass.Service.Service = (function()
         if (!args) {
             return [];
         }
-
         args = Subclass.Tools.extend([], args);
 
         for (var i = 0; i < args.length; i++) {
@@ -825,6 +871,48 @@ Subclass.Service.Service = (function()
     };
 
     /**
+     * Adds new call injection to "calls" option
+     *
+     * @method addCall
+     * @memberOf Subclass.Service.Service.prototype
+     *
+     * @param {string} methodName
+     *      The name of method in service class
+     *
+     * @param {Array} [methodArgs=[]]
+     *      The array of methods arguments
+     */
+    Service.prototype.addCall = function(methodName, methodArgs)
+    {
+        if (this.isInitialized()) {
+            Subclass.Error.create('ServiceInitialized')
+                .service(this.getName())
+                .apply()
+            ;
+        }
+        if (!methodName || typeof methodName != 'string') {
+            Subclass.Error.create('InvalidArgument')
+                .argument('the name of callable method', false)
+                .expected('a string')
+                .received(methodName)
+                .apply()
+            ;
+        }
+        if (arguments.length > 1 && !Array.isArray(methodArgs)) {
+            Subclass.Error.create('InvalidArgument')
+                .argument('the methods arguments', false)
+                .expected('an array')
+                .received(methodArgs)
+                .apply()
+            ;
+        }
+        if (!methodArgs) {
+            methodArgs = [];
+        }
+        this.getDefinition().calls[methodName] = methodArgs;
+    };
+
+    /**
      * Normalizes arguments of methods specified in the "calls" option.<br /><br />
      *
      * It performs arguments array from each specified method in the same way as
@@ -843,7 +931,6 @@ Subclass.Service.Service = (function()
         if (!calls) {
             return {};
         }
-
         calls = Subclass.Tools.extend({}, calls);
 
         if (calls) {

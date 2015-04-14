@@ -8,6 +8,12 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
                 initialize: ["%mode%"]
             }
         }
+    },
+    onConfig: function(evt)
+    {
+        var searchService = this.getServiceManager().getServiceDefinition('search');
+        searchService.addArgument(1, 'extraArg');
+        searchService.addCall('extraMethod');
     }
 });
 
@@ -19,6 +25,16 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
 
         _mode: null,
 
+        _extraArg: null,
+
+        _extraCalled: false,
+
+        $_constructor: function(engineName, extraArg)
+        {
+            this.callParent('$_constructor', engineName);
+            this._extraArg = extraArg;
+        },
+
         initialize: function(mode)
         {
             this._mode = mode;
@@ -27,6 +43,11 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
         getMode: function()
         {
             return this._mode;
+        },
+
+        extraMethod: function()
+        {
+            this._extraCalled = true;
         }
     });
 }();

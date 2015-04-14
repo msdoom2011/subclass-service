@@ -400,6 +400,63 @@ Subclass.Service.ServiceManager = (function()
     };
 
     /**
+     * Returns module names where is defined service with specified name.<br /><br />
+     *
+     * @method setServiceLocations
+     * @memberOf Subclass.Service.ServiceManager.prototype
+     *
+     * @param {string} serviceName
+     *      The name of interesting service
+     *
+     * @returns {string[]}
+     */
+    ServiceManager.prototype.getServiceLocations = function(serviceName)
+    {
+        //@TODO The searching of service locations should perform from the ROOT module
+
+        var moduleStorage = this.getModule().getModuleStorage();
+        var locations = [];
+
+        moduleStorage.eachModule(function(module) {
+            var serviceManager = module.getServiceManager();
+
+            if (serviceManager.issetService(serviceName, true)) {
+                locations.push(module.getName());
+            }
+            if (module.hasPlugins()) {
+                var pluginModuleStorage = module.getModuleStorage();
+                var plugins = pluginModuleStorage.getPlugins();
+
+                for (var i = 0; i < plugins.length; i++) {
+                    var subPlugin = plugins[i];
+                    var subPluginManager = subPlugin.getServiceManager();
+                    var subPluginLocations = subPluginManager.getServiceLocations(serviceName);
+
+                    locations = locations.concat(subPluginLocations);
+                }
+            }
+        });
+
+        return locations;
+    };
+
+    /**
+     * Returns module to which belongs the instance of service definition that is in use
+     *
+     * @method getServiceModule
+     * @memberOf Subclass.Service.Service
+     *
+     * @param {string} serviceName
+     *      The name of interesting service
+     *
+     * @returns {Subclass.Module}
+     */
+    ServiceManager.prototype.getServiceModule = function(serviceName)
+    {
+        var moduleStorage = this.getModule().getModuleStorage();
+    };
+
+    /**
      * Checks whether service with specified name was ever registered
      *
      * @method issetService

@@ -13,7 +13,7 @@ var app = Subclass.createModule("app", ['appFirstPlugin'], {
             className: "%searchClass%",
             arguments: ["%engine%"]
         },
-        search_engine: {
+        search_engine_bad_name: {
             abstract: true,
             tags: ["search"]
         },
@@ -36,5 +36,9 @@ var app = Subclass.createModule("app", ['appFirstPlugin'], {
                 setUsedEngine: ["solr"]
             }
         }
+    },
+    onConfig: function(evt) {
+        var searchEngine = this.getServiceManager().getServiceDefinition('search_engine_bad_name');
+            searchEngine.rename('search_engine');
     }
 });
