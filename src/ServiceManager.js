@@ -269,7 +269,7 @@ Subclass.Service.ServiceManager = (function()
 
         // Returning services from current module with parameters from its parent modules
 
-        if (withParentServices && !mainModule.isRoot() && arguments[2] != mainModule) {
+        if (!privateServices && withParentServices && !mainModule.isRoot() && arguments[2] != mainModule) {
             return mainModule.getRoot().getServiceManager().getServices(false, false, mainModule);
 
         // Returning services from current module (without its plug-ins)
@@ -322,6 +322,53 @@ Subclass.Service.ServiceManager = (function()
         }
 
         return taggedServices;
+    };
+
+    /**
+     * Returns module names where is defined service with specified name.<br /><br />
+     *
+     * @method getServiceLocations
+     * @memberOf Subclass.Service.ServiceManager.prototype
+     *
+     * @param {string} serviceName
+     *      The name of interesting service
+     *
+     * @returns {string[]}
+     */
+    ServiceManager.prototype.getServiceLocations = function(serviceName)
+    {
+        var mainModule = this.getModule().getRoot();
+        var locations = [];
+
+        if (arguments[1]) {
+            mainModule = arguments[1];
+        }
+        var moduleStorage = mainModule.getModuleStorage();
+
+        moduleStorage.eachModule(function(module) {
+            var serviceManager = module.getServiceManager();
+
+            if (serviceManager.issetService(serviceName, true)) {
+                locations.push(module.getName());
+            }
+            if (module == mainModule) {
+                return;
+            }
+            if (module.hasPlugins()) {
+                var pluginModuleStorage = module.getModuleStorage();
+                var plugins = pluginModuleStorage.getPlugins();
+
+                for (var i = 0; i < plugins.length; i++) {
+                    var subPlugin = plugins[i];
+                    var subPluginManager = subPlugin.getServiceManager();
+                    var subPluginLocations = subPluginManager.getServiceLocations(serviceName, subPlugin);
+
+                    locations = locations.concat(subPluginLocations);
+                }
+            }
+        });
+
+        return locations;
     };
 
     /**
@@ -400,60 +447,48 @@ Subclass.Service.ServiceManager = (function()
     };
 
     /**
-     * Returns module names where is defined service with specified name.<br /><br />
+     * Renames the service with specified old name to the new one.
      *
-     * @method setServiceLocations
-     * @memberOf Subclass.Service.ServiceManager.prototype
+     * @method renameService
+     * @memberOf Subclass.Service.ServiceManager
      *
-     * @param {string} serviceName
-     *      The name of interesting service
+     * @param {string} nameOld
+     *      The old service name
      *
-     * @returns {string[]}
+     * @param {string} nameNew
+     *      The new service name
      */
-    ServiceManager.prototype.getServiceLocations = function(serviceName)
+    ServiceManager.prototype.renameService = function(nameOld, nameNew)
     {
-        //@TODO The searching of service locations should perform from the ROOT module
+        if (!this.issetService(nameOld)) {
+            Subclass.Error.create('Trying to rename non existent service "' + nameOld + '".');
+        }
+        if (!nameNew || typeof nameNew != 'string') {
+            Subclass.Error.create('InvalidError')
+                .argument('the new service name', false)
+                .expected('a string')
+                .received(nameNew)
+                .apply()
+            ;
+        }
+        var moduleNames = this.getServiceLocations(nameOld);
 
-        var moduleStorage = this.getModule().getModuleStorage();
-        var locations = [];
-
-        moduleStorage.eachModule(function(module) {
+        for (var i = 0; i < moduleNames.length; i++) {
+            var module = Subclass.getModule(moduleNames[i]);
             var serviceManager = module.getServiceManager();
+            var services = serviceManager.getServices(true);
+            var service = services[nameOld];
 
-            if (serviceManager.issetService(serviceName, true)) {
-                locations.push(module.getName());
+            if (!service) {
+                Subclass.Error.create(
+                    'The work of method ' +
+                    '"Subclass.Service.ServiceManager#getServiceLocations" is incorrect.'
+                );
             }
-            if (module.hasPlugins()) {
-                var pluginModuleStorage = module.getModuleStorage();
-                var plugins = pluginModuleStorage.getPlugins();
-
-                for (var i = 0; i < plugins.length; i++) {
-                    var subPlugin = plugins[i];
-                    var subPluginManager = subPlugin.getServiceManager();
-                    var subPluginLocations = subPluginManager.getServiceLocations(serviceName);
-
-                    locations = locations.concat(subPluginLocations);
-                }
-            }
-        });
-
-        return locations;
-    };
-
-    /**
-     * Returns module to which belongs the instance of service definition that is in use
-     *
-     * @method getServiceModule
-     * @memberOf Subclass.Service.Service
-     *
-     * @param {string} serviceName
-     *      The name of interesting service
-     *
-     * @returns {Subclass.Module}
-     */
-    ServiceManager.prototype.getServiceModule = function(serviceName)
-    {
-        var moduleStorage = this.getModule().getModuleStorage();
+            delete services[nameOld];
+            services[nameNew] = service;
+            service.setName(nameNew);
+        }
     };
 
     /**

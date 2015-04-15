@@ -202,14 +202,6 @@ Subclass.Service.Service = (function()
                 .apply()
             ;
         }
-        if (!serviceName || typeof serviceName != 'string' || !serviceName.match(/^[0-9_a-z]+$/i)) {
-            Subclass.Error.create('InvalidArgument')
-                .argument('the name of service', false)
-                .received(serviceName)
-                .expected('a string')
-                .apply()
-            ;
-        }
 
         /**
          * Service manager instance
@@ -225,7 +217,7 @@ Subclass.Service.Service = (function()
          * @type {string}
          * @private
          */
-        this._name = serviceName;
+        this._name = null;
 
         /**
          * Definition of the service
@@ -250,6 +242,11 @@ Subclass.Service.Service = (function()
          * @private
          */
         this._initialized = false;
+
+
+        // Init operations
+
+        this.setName(serviceName);
     }
 
     /**
@@ -263,6 +260,32 @@ Subclass.Service.Service = (function()
     Service.prototype.getServiceManager = function()
     {
         return this._serviceManager;
+    };
+
+    /**
+     * Sets the name of service.
+     *
+     * This method is actual only at init stage.
+     * If you really want to change service name you should use
+     * the {@link Subclass.Service.Service#rename} method.
+     *
+     * @method setName
+     * @memberOf Subclass.Service.Service.prototype
+     *
+     * @param {string} name
+     *      The name of service
+     */
+    Service.prototype.setName = function(name)
+    {
+        if (!name || typeof name != 'string' || !name.match(/^[0-9_a-z]+$/i)) {
+            Subclass.Error.create('InvalidArgument')
+                .argument('the name of service', false)
+                .expected('a string')
+                .received(name)
+                .apply()
+            ;
+        }
+        this._name = name;
     };
 
     /**
@@ -346,13 +369,7 @@ Subclass.Service.Service = (function()
      */
     Service.prototype.rename = function(name)
     {
-        var serviceModule = this.getServiceManager().getServiceLocation(this.getName());
-        var serviceManager = serviceModule.getServiceManager();
-        var services = serviceManager.getServices(true);
-
-        delete services[this.getName()];
-        services[name] = this;
-        this._name = name;
+        this.getServiceManager().renameService(this.getName(), name);
     };
 
     /**
