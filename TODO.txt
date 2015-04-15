@@ -2,7 +2,4 @@
 TODO List
 --------------------------------------------------------
 
-1. Add ability to create alias for registered services.
-
-2. Add ability to rename existent service
-
+1. Provide API for creating ability to change or extend functionality of subclass services.
