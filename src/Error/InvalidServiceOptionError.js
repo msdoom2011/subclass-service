@@ -19,8 +19,17 @@ Subclass.Service.Error.InvalidServiceOptionError = (function()
 {
     function InvalidServiceOptionError(message)
     {
-        Subclass.Error.call(this, message);
+        InvalidServiceOptionError.$parent.call(this, message);
     }
+
+    InvalidServiceOptionError.$parent = Subclass.Error.ErrorBase;
+
+    InvalidServiceOptionError.$mixins = [
+        Subclass.Error.Option.Service,
+        Subclass.Error.Option.Option,
+        Subclass.Error.Option.Expected,
+        Subclass.Error.Option.Received
+    ];
 
     /**
      * Returns the name of error type
@@ -37,27 +46,6 @@ Subclass.Service.Error.InvalidServiceOptionError = (function()
     };
 
     /**
-     * Returns all available error type options
-     *
-     * @method getOptions
-     * @memberOf Subclass.Service.Error.InvalidServiceOptionError
-     * @static
-     *
-     * @returns {Array}
-     */
-    InvalidServiceOptionError.getOptions = function()
-    {
-        var options = Subclass.Error.getOptions();
-
-        return options.concat([
-            'option',
-            'service',
-            'expected',
-            'received'
-        ]);
-    };
-
-    /**
      * Returns required error fields
      *
      * @method getRequiredOptions
@@ -68,7 +56,7 @@ Subclass.Service.Error.InvalidServiceOptionError = (function()
      */
     InvalidServiceOptionError.getRequiredOptions = function()
     {
-        var required = Subclass.Error.getRequiredOptions();
+        var required = InvalidServiceOptionError.$parent.getRequiredOptions();
 
         return required.concat([
             'service',
@@ -81,7 +69,7 @@ Subclass.Service.Error.InvalidServiceOptionError = (function()
      */
     InvalidServiceOptionError.prototype.buildMessage = function()
     {
-        var message = Subclass.Error.prototype.buildMessage.call(this);
+        var message = InvalidServiceOptionError.$parent.prototype.buildMessage.call(this);
 
         if (!message) {
             message += 'Invalid value of option "' + this.option() + '" ';

@@ -17,8 +17,14 @@ Subclass.Service.Error.ServiceInitializedError = (function()
 {
     function ServiceInitializedError(message)
     {
-        Subclass.Error.call(this, message);
+        ServiceInitializedError.$parent.call(this, message);
     }
+
+    ServiceInitializedError.$parent = Subclass.Error.ErrorBase;
+
+    ServiceInitializedError.$mixins = [
+        Subclass.Error.Option.Service
+    ];
 
     /**
      * Returns the name of error type
@@ -35,24 +41,6 @@ Subclass.Service.Error.ServiceInitializedError = (function()
     };
 
     /**
-     * Returns all available error type options
-     *
-     * @method getOptions
-     * @memberOf Subclass.Service.Error.ServiceInitializedError
-     * @static
-     *
-     * @returns {Array}
-     */
-    ServiceInitializedError.getOptions = function()
-    {
-        var options = Subclass.Error.getOptions();
-
-        return options.concat([
-            'service'
-        ]);
-    };
-
-    /**
      * Returns required error fields
      *
      * @method getRequiredOptions
@@ -63,7 +51,7 @@ Subclass.Service.Error.ServiceInitializedError = (function()
      */
     ServiceInitializedError.getRequiredOptions = function()
     {
-        var required = Subclass.Error.getRequiredOptions();
+        var required = ServiceInitializedError.$parent.getRequiredOptions();
 
         return required.concat([
             'service'
@@ -75,7 +63,7 @@ Subclass.Service.Error.ServiceInitializedError = (function()
      */
     ServiceInitializedError.prototype.buildMessage = function()
     {
-        var message = Subclass.Error.prototype.buildMessage.call(this);
+        var message = ServiceInitializedError.$parent.prototype.buildMessage.call(this);
 
         if (!message) {
             message += 'You can\'t modify definition of the service "' + this.service() + '" after it was created.';

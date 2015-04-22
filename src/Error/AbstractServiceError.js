@@ -16,8 +16,14 @@ Subclass.Service.Error.AbstractServiceError = (function()
 {
     function AbstractServiceError(message)
     {
-        Subclass.Error.call(this, message);
+        AbstractServiceError.$parent.call(this, message);
     }
+
+    AbstractServiceError.$parent = Subclass.Error.ErrorBase;
+
+    AbstractServiceError.$mixins = [
+        Subclass.Error.Option.Service
+    ];
 
     /**
      * Returns the name of error type
@@ -34,24 +40,6 @@ Subclass.Service.Error.AbstractServiceError = (function()
     };
 
     /**
-     * Returns all available error type options
-     *
-     * @method getOptions
-     * @memberOf Subclass.Service.Error.AbstractServiceError
-     * @static
-     *
-     * @returns {Array}
-     */
-    AbstractServiceError.getOptions = function()
-    {
-        var options = Subclass.Error.getOptions();
-
-        return options.concat([
-            'service'
-        ]);
-    };
-
-    /**
      * Returns required error fields
      *
      * @method getRequiredOptions
@@ -62,7 +50,7 @@ Subclass.Service.Error.AbstractServiceError = (function()
      */
     AbstractServiceError.getRequiredOptions = function()
     {
-        var required = Subclass.Error.getRequiredOptions();
+        var required = AbstractServiceError.$parent.getRequiredOptions();
 
         return required.concat([
             'service'
@@ -74,7 +62,7 @@ Subclass.Service.Error.AbstractServiceError = (function()
      */
     AbstractServiceError.prototype.buildMessage = function()
     {
-        var message = Subclass.Error.prototype.buildMessage.call(this);
+        var message = AbstractServiceError.$parent.prototype.buildMessage.call(this);
 
         if (!message) {
             message += 'You can\'t get/create instance of abstract service "' + this.service() + '".';
