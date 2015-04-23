@@ -57,7 +57,7 @@ Subclass.Service.ServiceManager = (function()
          * @type {Subclass.Service.ServiceFactory}
          * @private
          */
-        this._serviceFactory = new Subclass.Service.ServiceFactory(this);
+        this._serviceFactory = Subclass.Tools.createClassInstance(Subclass.Service.ServiceFactory, this);
 
         /**
          * List of properties
@@ -388,7 +388,7 @@ Subclass.Service.ServiceManager = (function()
         if (this.getModule().isReady()) {
             Subclass.Error.create('Can\'t define new services when module is ready.');
         }
-        var service = new Subclass.Service.Service(this, serviceName, serviceDefinition);
+        var service = Subclass.Tools.createClassInstance(Subclass.Service.Service, this, serviceName, serviceDefinition);
         this._services[serviceName] = service;
 
         var classManager = this.getModule().getClassManager();
