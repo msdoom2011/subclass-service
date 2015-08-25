@@ -44,15 +44,15 @@ Subclass.Service.Extension.ModuleAPIExtension = function() {
     };
 
     /**
-    * The same as the {@link Subclass.ConfigManager#setServices}
+    * The same as the {@link Subclass.SettingsManager#setServices}
     *
     * @method registerServices
     * @memberOf Subclass.ModuleAPI.prototype
     */
     ModuleAPI.prototype.registerServices = function()
     {
-        return this.getModule().getConfigManager().setServices.apply(
-            this.getModule().getConfigManager(),
+        return this.getModule().getSettingsManager().setServices.apply(
+            this.getModule().getSettingsManager(),
             arguments
         );
     };

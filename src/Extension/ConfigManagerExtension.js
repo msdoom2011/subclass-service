@@ -2,27 +2,27 @@
  * @class
  * @constructor
  */
-Subclass.Service.Extension.ConfigManagerExtension = function() {
+Subclass.Service.Extension.SettingsManagerExtension = function() {
 
-    function ConfigManagerExtension(classInst)
+    function SettingsManagerExtension(classInst)
     {
-        ConfigManagerExtension.$parent.apply(this, arguments);
+        SettingsManagerExtension.$parent.apply(this, arguments);
     }
 
-    ConfigManagerExtension.$parent = Subclass.Extension;
+    SettingsManagerExtension.$parent = Subclass.Extension;
 
 
     //=========================================================================
     //========================== ADDING NEW METHODS ===========================
     //=========================================================================
 
-    var ConfigManager = Subclass.ConfigManager;
+    var SettingsManager = Subclass.SettingsManager;
 
     /**
      * Registers new services and redefines already existent ones with the same name.
      *
      * @method setServices
-     * @memberOf Subclass.ConfigManager.prototype
+     * @memberOf Subclass.SettingsManager.prototype
      *
      * @throws {Error}
      *      Throws error if trying to change value after the module became ready
@@ -43,7 +43,7 @@ Subclass.Service.Extension.ConfigManagerExtension = function() {
      * });
      * ...
      *
-     * var moduleConfigs = moduleInst.getConfigManager();
+     * var moduleConfigs = moduleInst.getSettingsManager();
      *
      * // Registering services
      * moduleConfigs.setServices({
@@ -86,7 +86,7 @@ Subclass.Service.Extension.ConfigManagerExtension = function() {
      * var param2 = logger._param2; // "param 2 value"
      * ...
      */
-    ConfigManager.prototype.setServices = function(services)
+    SettingsManager.prototype.setServices = function(services)
     {
         this.checkModuleIsReady();
 
@@ -116,11 +116,11 @@ Subclass.Service.Extension.ConfigManagerExtension = function() {
      * Returns all registered services in the form as they were defined
      *
      * @method getServices
-     * @memberOf Subclass.ConfigManager.prototype
+     * @memberOf Subclass.SettingsManager.prototype
      *
      * @returns {Object.<Object>}
      */
-    ConfigManager.prototype.getServices = function()
+    SettingsManager.prototype.getServices = function()
     {
         var services = this.getModule().getServiceManager().getServices();
         var serviceDefinitions = {};
@@ -141,12 +141,12 @@ Subclass.Service.Extension.ConfigManagerExtension = function() {
 
     Subclass.Module.onInitializeBefore(function(evt, module)
     {
-        ConfigManager = Subclass.Tools.buildClassConstructor(ConfigManager);
+        SettingsManager = Subclass.Tools.buildClassConstructor(SettingsManager);
 
-        if (!ConfigManager.hasExtension(ConfigManagerExtension)) {
-            ConfigManager.registerExtension(ConfigManagerExtension);
+        if (!SettingsManager.hasExtension(SettingsManagerExtension)) {
+            SettingsManager.registerExtension(SettingsManagerExtension);
         }
     });
 
-    return ConfigManagerExtension;
+    return SettingsManagerExtension;
 }();
