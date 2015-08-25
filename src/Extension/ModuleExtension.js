@@ -2,7 +2,7 @@
  * @class
  * @constructor
  *
- * Module configs:
+ * Module settings:
  *
  * services     {Object}    opt    List of service definitions.
  *                                 To see more about service
@@ -11,7 +11,7 @@
  *
  *                                 Example:
  *
- *                                 var moduleConfigs = {
+ *                                 var moduleSettings = {
  *                                   ...
  *                                   services: {
  *                                     foo: {

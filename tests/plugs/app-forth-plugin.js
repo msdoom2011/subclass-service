@@ -9,7 +9,7 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
             }
         }
     },
-    onConfig: function(evt)
+    onSetup: function(evt)
     {
         var searchService = this.getServiceManager().getServiceDefinition('search');
         searchService.addArgument(1, 'extraArg');

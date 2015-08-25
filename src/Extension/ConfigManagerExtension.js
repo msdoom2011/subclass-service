@@ -43,10 +43,10 @@ Subclass.Service.Extension.SettingsManagerExtension = function() {
      * });
      * ...
      *
-     * var moduleConfigs = moduleInst.getSettingsManager();
+     * var moduleSettings = moduleInst.getSettingsManager();
      *
      * // Registering services
-     * moduleConfigs.setServices({
+     * moduleSettings.setServices({
      *      logger: {
      *          className: "Name/Of/LoggerService", // name of service class
      *          arguments: [ "%mode%" ],            // arguments for service class constructor
