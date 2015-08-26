@@ -29,9 +29,12 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
 
         _extraCalled: false,
 
+        _serviceManager: null,
+
         $_constructor: function(engineName, serviceManager, extraArg)
         {
             this.callParent('$_constructor', engineName);
+            this._serviceManager = serviceManager;
             this._extraArg = extraArg;
         },
 

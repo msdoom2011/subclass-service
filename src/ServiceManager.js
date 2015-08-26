@@ -92,12 +92,12 @@ Subclass.Service.ServiceManager = function()
 
             if (module.isRoot()) {
                 var serviceManager = module.getServiceManager();
-                serviceManager.registerService('service_manager', module.getServiceManager());
-                serviceManager.registerService('class_manager', module.getClassManager());
-                serviceManager.registerService('event_manager', module.getEventManager());
-                serviceManager.registerService('load_manager', module.getEventManager());
-                serviceManager.registerService('settings_manager', module.getEventManager());
-                serviceManager.registerService('module_storage', module.getEventManager());
+                serviceManager.register('service_manager', module.getServiceManager());
+                serviceManager.register('class_manager', module.getClassManager());
+                serviceManager.register('event_manager', module.getEventManager());
+                serviceManager.register('load_manager', module.getEventManager());
+                serviceManager.register('settings_manager', module.getEventManager());
+                serviceManager.register('module_storage', module.getEventManager());
             }
         });
 
@@ -229,10 +229,7 @@ Subclass.Service.ServiceManager = function()
         var serviceDefinitions = this.getServices();
 
         for (var serviceName in serviceDefinitions) {
-            if (
-                !serviceDefinitions.hasOwnProperty(serviceName)
-                || !(serviceDefinitions[serviceName] instanceof Subclass.Service.Service)
-            ) {
+            if (!serviceDefinitions.hasOwnProperty(serviceName)) {
                 continue;
             }
             var parentServiceName = serviceDefinitions[serviceName].getExtends();
@@ -327,10 +324,7 @@ Subclass.Service.ServiceManager = function()
         var taggedServices = [];
 
         for (var serviceName in serviceDefinitions) {
-            if (
-                !serviceDefinitions.hasOwnProperty(serviceName)
-                || !(serviceDefinitions[serviceName] instanceof Subclass.Service.Service)
-            ) {
+            if (!serviceDefinitions.hasOwnProperty(serviceName)) {
                 continue;
             }
             var taggedService = serviceDefinitions[serviceName];
@@ -394,7 +388,7 @@ Subclass.Service.ServiceManager = function()
     /**
      * Registers the new service
      *
-     * @method registerService
+     * @method register
      * @memberOf Subclass.Service.ServiceManager.prototype
      *
      * @param {string} serviceName
@@ -403,34 +397,33 @@ Subclass.Service.ServiceManager = function()
      * @param {Object} serviceDefinition
      *      The service configuration
      */
-    ServiceManager.prototype.registerService = function(serviceName, serviceDefinition)
+    ServiceManager.prototype.register = function(serviceName, serviceDefinition)
     {
-        var service;
+        var readyServiceInstance = null;
 
         if (this.getModule().isReady()) {
             Subclass.Error.create('Can\'t define new services when module is ready.');
         }
-
-        if (
-            serviceDefinition
-            && typeof serviceDefinition == 'object'
-            && !Subclass.Tools.isPlainObject(serviceDefinition)
-        ) {
-            service = serviceDefinition;
-
-        } else {
-            service = Subclass.Tools.createClassInstance(
-                Subclass.Service.Service, this, serviceName, serviceDefinition
-            );
-            var classManager = this.getModule().getClassManager();
-
-            if (serviceDefinition.className) {
-                var className = service.normalizeClassName(serviceDefinition.className);
-                classManager.loadClass(className);
-            }
+        if (!Subclass.Tools.isPlainObject(serviceDefinition)) {
+            readyServiceInstance = serviceDefinition;
+            serviceDefinition = {};
         }
 
-        return this._services[serviceName] = service;
+        var service = Subclass.Tools.createClassInstance(Subclass.Service.Service, this, serviceName, serviceDefinition);
+        this._services[serviceName] = service;
+
+        var classManager = this.getModule().getClassManager();
+
+        if (readyServiceInstance) {
+            service.setInstance(readyServiceInstance);
+            service.initialize();
+        }
+        if (serviceDefinition.className) {
+            var className = service.normalizeClassName(serviceDefinition.className);
+            classManager.loadClass(className);
+        }
+
+        return service;
     };
 
     /**
@@ -455,16 +448,7 @@ Subclass.Service.ServiceManager = function()
         }
         var serviceDef = this.getServices()[serviceName];
 
-        if (
-            serviceDef
-            && typeof serviceDef == 'object'
-            && !(serviceDef instanceof Subclass.Service.Service)
-        ) {
-            return serviceDef;
-
-        } else {
-            return this.getServiceFactory().getService(serviceDef);
-        }
+        return this.getServiceFactory().getService(serviceDef);
     };
 
     /**
@@ -528,10 +512,7 @@ Subclass.Service.ServiceManager = function()
             }
             delete services[nameOld];
             services[nameNew] = service;
-
-            if (service instanceof Subclass.Service.Service) {
-                service.setName(nameNew);
-            }
+            service.setName(nameNew);
         }
     };
 

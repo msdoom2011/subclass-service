@@ -105,7 +105,7 @@ Subclass.Service.Extension.SettingsManagerExtension = function() {
             if (!services.hasOwnProperty(serviceName)) {
                 continue;
             }
-            serviceManager.registerService(
+            serviceManager.register(
                 serviceName,
                 services[serviceName]
             );

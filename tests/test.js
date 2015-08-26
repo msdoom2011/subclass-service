@@ -23,6 +23,7 @@ describe("Checking services", function() {
         expect(search.getMode()).toBe('dev');
         expect(search._extraArg).toBe('extraArg');
         expect(search._extraCalled).toBe(true);
+        expect(search._serviceManager instanceof Subclass.Service.ServiceManager).toBe(true);
 
         expect(search == searchAnother).toBe(true);
         expect(search.isError()).toBe(true);

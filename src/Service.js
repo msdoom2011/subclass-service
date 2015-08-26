@@ -1214,10 +1214,7 @@ Subclass.Service.Service = (function()
                     return;
                 }
                 var service = serviceManager.getServiceDefinition(serviceName);
-
-                if (service instanceof Subclass.Service.Service) {
                     chain.concat(service.validateDefinition(chain));
-                }
             }
         }
 

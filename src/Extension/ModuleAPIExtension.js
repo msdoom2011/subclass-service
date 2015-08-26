@@ -37,7 +37,7 @@ Subclass.Service.Extension.ModuleAPIExtension = function() {
     */
     ModuleAPI.prototype.registerService = function()
     {
-        return this.getModule().getServiceManager().registerService.apply(
+        return this.getModule().getServiceManager().register.apply(
             this.getModule().getServiceManager(),
             arguments
         );
