@@ -20,6 +20,11 @@ describe("Checking services", function() {
     it ("creation", function() {
         var search = app.getService('search');
         var searchAnother = app.getService('search');
+
+        //console.log(Object.keys(app.getServiceManager().getServices()));
+        //console.log(app.getServiceManager().getServicesByTag('search'));
+
+
         expect(search.getMode()).toBe('dev');
         expect(search._extraArg).toBe('extraArg');
         expect(search._extraCalled).toBe(true);
