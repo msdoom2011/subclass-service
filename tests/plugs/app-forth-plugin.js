@@ -3,7 +3,7 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
     services: {
         search: {
             className: "Search/InitSearch",
-            arguments: ["%engine%"],
+            arguments: ["%engine%", "@service_manager"],
             calls: {
                 initialize: ["%mode%"]
             }
@@ -12,7 +12,7 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
     onSetup: function(evt)
     {
         var searchService = this.getServiceManager().getServiceDefinition('search');
-        searchService.addArgument(1, 'extraArg');
+        searchService.addArgument(2, 'extraArg');
         searchService.addCall('extraMethod');
     }
 });
@@ -29,7 +29,7 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
 
         _extraCalled: false,
 
-        $_constructor: function(engineName, extraArg)
+        $_constructor: function(engineName, serviceManager, extraArg)
         {
             this.callParent('$_constructor', engineName);
             this._extraArg = extraArg;

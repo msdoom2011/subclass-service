@@ -77,6 +77,14 @@ Subclass.Service.ServiceFactory = (function()
     {
         var firstCreation = false;
 
+        if (!(serviceDefinition instanceof Subclass.Service.Service)) {
+            Subclass.Error.create('InvalidArgument')
+                .argument('the service definition instance', false)
+                .expected('an instance of class Subclass.Service.Service')
+                .received(serviceDefinition)
+                .apply()
+            ;
+        }
         if (serviceDefinition.getAbstract()) {
             Subclass.Error.create('AbstractService')
                 .service(serviceDefinition.getName())
