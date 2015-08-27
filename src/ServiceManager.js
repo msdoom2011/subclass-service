@@ -412,14 +412,17 @@ Subclass.Service.ServiceManager = function()
         var service = Subclass.Tools.createClassInstance(Subclass.Service.Service, this, serviceName, serviceDefinition);
         this._services[serviceName] = service;
 
-        var classManager = this.getModule().getClassManager();
+        var module = this.getModule();
+        var classManager = module.getClassManager();
+        var parserManager = module.getParserManager();
 
         if (readyServiceInstance) {
             service.setInstance(readyServiceInstance);
             service.initialize();
         }
         if (serviceDefinition.className) {
-            var className = service.normalizeClassName(serviceDefinition.className);
+            //var className = service.normalizeClassName(serviceDefinition.className);
+            var className = parserManager.parse(serviceDefinition.className);
             classManager.loadClass(className);
         }
 

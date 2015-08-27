@@ -642,29 +642,9 @@ Subclass.Service.Service = (function()
      */
     Service.prototype.getClassName = function()
     {
-        return this.normalizeClassName(this.getDefinition().className);
-    };
-
-    /**
-     * Normalizes name of service class
-     *
-     * @param {string} className
-     *      The name of service class
-     *
-     * @returns {string}
-     */
-    Service.prototype.normalizeClassName = function(className)
-    {
-        var paramRegExp = /%([^%]+)%/i;
-
-        if (paramRegExp.test(className)) {
-            var paramManager = this.getServiceManager().getModule().getParameterManager();
-            var paramName = className.match(paramRegExp)[1];
-            var param = paramManager.getParameter(paramName);
-
-            className = className.replace(paramRegExp, param);
-        }
-        return className;
+        //return this.normalizeClassName(this.getDefinition().className);
+        var parserManager = this.getServiceManager().getModule().getParserManager();
+        return parserManager.parse(this.getDefinition().className);
     };
 
     /**
@@ -773,6 +753,7 @@ Subclass.Service.Service = (function()
     Service.prototype.normalizeArguments = function(args)
     {
         var serviceManager = this.getServiceManager();
+        var parserManager = serviceManager.getModule().getParserManager();
         var parameterManager = serviceManager.getModule().getParameterManager();
 
         if (!args) {
@@ -781,23 +762,7 @@ Subclass.Service.Service = (function()
         args = Subclass.Tools.extend([], args);
 
         for (var i = 0; i < args.length; i++) {
-            var value = args[i];
-
-            if (typeof value == 'string' && value.match(/^@[a-z_0-9]+$/i)) {
-                var serviceName = value.substr(1);
-                args[i] = serviceManager.getService(serviceName);
-
-            } else if (typeof value == 'string' && value.match(/%.+%/i)) {
-                var regex = /%([^%]+)%/i;
-
-                while (regex.test(value)) {
-                    var parameterName = value.match(regex)[1];
-                    var parameterValue = parameterManager.getParameter(parameterName);
-
-                    value = value.replace(regex, parameterValue);
-                }
-                args[i] = value;
-            }
+            args[i] = parserManager.parse(args[i]);
         }
         return args;
     };

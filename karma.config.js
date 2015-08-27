@@ -20,6 +20,7 @@ module.exports = function(config) {
       "vendors/subclass.js",
       "vendors/subclass-parameter.js",
       "src/ServiceManager.js",
+      "src/Parser/**/*.js",
       "src/Error/Option/*.js",
       "src/Error/**.js",
       "src/**/*.js",
