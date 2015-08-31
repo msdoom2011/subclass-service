@@ -103,11 +103,11 @@ Subclass.Service.ServiceManager = function()
 
         eventManager.getEvent('onReadyBefore').addListener(function() {
             if ($this.getModule().isRoot()) {
-                $this.normalizeServices();
+                $this.normalize();
             }
         });
         eventManager.getEvent('onAddPlugin').addListener(function(pluginModule) {
-            $this.normalizeServices();
+            $this.normalize();
         });
     };
 
@@ -130,7 +130,7 @@ Subclass.Service.ServiceManager = function()
      * @memberOf Subclass.Service.ServiceManager.prototype
      * @returns {Subclass.Service.ServiceFactory}
      */
-    ServiceManager.prototype.getServiceFactory = function()
+    ServiceManager.prototype.getFactory = function()
     {
         return this._serviceFactory;
     };
@@ -145,7 +145,7 @@ Subclass.Service.ServiceManager = function()
      * The lacking options in services that extends another service
      * will be added from the parent service
      *
-     * @method normalizeServices
+     * @method normalize
      * @memberOf Subclass.Service.ServiceManager.prototype
      *
      * @example
@@ -224,7 +224,7 @@ Subclass.Service.ServiceManager = function()
      * }
      * ...
      */
-    ServiceManager.prototype.normalizeServices = function()
+    ServiceManager.prototype.normalize = function()
     {
         var serviceDefinitions = this.getServices();
 
@@ -236,7 +236,7 @@ Subclass.Service.ServiceManager = function()
             var definition = serviceDefinitions[serviceName].getDefinition();
 
             if (parentServiceName) {
-                var parentServiceDefinition = this.getServiceDefinition(parentServiceName);
+                var parentServiceDefinition = this.getDefinition(parentServiceName);
                 var parentDefinition = Subclass.Tools.copy(parentServiceDefinition.getDefinition());
 
                 if (!definition.abstract) {
@@ -307,9 +307,29 @@ Subclass.Service.ServiceManager = function()
     };
 
     /**
+     * Returns service definition instance
+     *
+     * @method getDefinition
+     * @memberOf Subclass.Service.ServiceManager.prototype
+     *
+     * @param {string} serviceName
+     *      The service name which definition you want to get
+     *
+     * @returns {Subclass.Service.Service}
+     *      The service definition instance which contains the service configuration data
+     */
+    ServiceManager.prototype.getDefinition = function(serviceName)
+    {
+        if (!this.isset(serviceName)) {
+            Subclass.Error.create('Service with name "' + serviceName + '" is not exists.');
+        }
+        return this.getServices()[serviceName];
+    };
+
+    /**
      * Returns all services tagged by specified tag
      *
-     * @method getServicesByTag
+     * @method findByTag
      * @memberOf Subclass.Service.ServiceManager.prototype
      *
      * @param {string} tag
@@ -318,7 +338,7 @@ Subclass.Service.ServiceManager = function()
      * @returns {Array.<Subclass.Service.Service>}
      *      The array of service definitions
      */
-    ServiceManager.prototype.getServicesByTag = function(tag)
+    ServiceManager.prototype.findByTag = function(tag)
     {
         var serviceDefinitions = this.getServices();
         var taggedServices = [];
@@ -341,7 +361,7 @@ Subclass.Service.ServiceManager = function()
     /**
      * Returns module names where is defined service with specified name.<br /><br />
      *
-     * @method getServiceLocations
+     * @method findLocations
      * @memberOf Subclass.Service.ServiceManager.prototype
      *
      * @param {string} serviceName
@@ -349,7 +369,7 @@ Subclass.Service.ServiceManager = function()
      *
      * @returns {string[]}
      */
-    ServiceManager.prototype.getServiceLocations = function(serviceName)
+    ServiceManager.prototype.findLocations = function(serviceName)
     {
         var mainModule = this.getModule().getRoot();
         var locations = [];
@@ -362,7 +382,7 @@ Subclass.Service.ServiceManager = function()
         moduleStorage.eachModule(function(module) {
             var serviceManager = module.getServiceManager();
 
-            if (serviceManager.issetService(serviceName, true)) {
+            if (serviceManager.isset(serviceName, true)) {
                 locations.push(module.getName());
             }
             if (module == mainModule) {
@@ -375,7 +395,7 @@ Subclass.Service.ServiceManager = function()
                 for (var i = 0; i < plugins.length; i++) {
                     var subPlugin = plugins[i];
                     var subPluginManager = subPlugin.getServiceManager();
-                    var subPluginLocations = subPluginManager.getServiceLocations(serviceName, subPlugin);
+                    var subPluginLocations = subPluginManager.findLocations(serviceName, subPlugin);
 
                     locations = locations.concat(subPluginLocations);
                 }
@@ -383,6 +403,51 @@ Subclass.Service.ServiceManager = function()
         });
 
         return locations;
+    };
+
+    /**
+     * Renames the service with specified old name to the new one.
+     *
+     * @method rename
+     * @memberOf Subclass.Service.ServiceManager
+     *
+     * @param {string} nameOld
+     *      The old service name
+     *
+     * @param {string} nameNew
+     *      The new service name
+     */
+    ServiceManager.prototype.rename = function(nameOld, nameNew)
+    {
+        if (!this.isset(nameOld)) {
+            Subclass.Error.create('Trying to rename non existent service "' + nameOld + '".');
+        }
+        if (!nameNew || typeof nameNew != 'string') {
+            Subclass.Error.create('InvalidError')
+                .argument('the new service name', false)
+                .expected('a string')
+                .received(nameNew)
+                .apply()
+            ;
+        }
+        var moduleNames = this.findLocations(nameOld);
+
+        for (var i = 0; i < moduleNames.length; i++) {
+            var module = Subclass.getModule(moduleNames[i]);
+            var serviceManager = module.getServiceManager();
+            var services = serviceManager.getServices(true);
+            var service = services[nameOld];
+
+            if (!service) {
+                Subclass.Error.create(
+                    'The work of method ' +
+                    '"Subclass.Service.ServiceManager#findLocations" is incorrect.'
+                );
+            }
+            delete services[nameOld];
+            services[nameNew] = service;
+            service.setName(nameNew);
+        }
     };
 
     /**
@@ -435,7 +500,7 @@ Subclass.Service.ServiceManager = function()
      * Depending on singleton marker will be returned the same
      * or the new instance every time you request the service.
      *
-     * @method getService
+     * @method get
      * @memberOf Subclass.Service.ServiceManager.prototype
      *
      * @param {string} serviceName
@@ -444,85 +509,20 @@ Subclass.Service.ServiceManager = function()
      * @returns {Object}
      *      Returns the instance of class specified in the "className" service option
      */
-    ServiceManager.prototype.getService = function(serviceName)
+    ServiceManager.prototype.get = function(serviceName)
     {
-        if (!this.issetService(serviceName)) {
+        if (!this.isset(serviceName)) {
             Subclass.Error.create('Service with name "' + serviceName + '" is not exists.');
         }
         var serviceDef = this.getServices()[serviceName];
 
-        return this.getServiceFactory().getService(serviceDef);
-    };
-
-    /**
-     * Returns service definition instance
-     *
-     * @method getServiceDefinition
-     * @memberOf Subclass.Service.ServiceManager.prototype
-     *
-     * @param {string} serviceName
-     *      The service name which definition you want to get
-     *
-     * @returns {Subclass.Service.Service}
-     *      The service definition instance which contains the service configuration data
-     */
-    ServiceManager.prototype.getServiceDefinition = function(serviceName)
-    {
-        if (!this.issetService(serviceName)) {
-            Subclass.Error.create('Service with name "' + serviceName + '" is not exists.');
-        }
-        return this.getServices()[serviceName];
-    };
-
-    /**
-     * Renames the service with specified old name to the new one.
-     *
-     * @method renameService
-     * @memberOf Subclass.Service.ServiceManager
-     *
-     * @param {string} nameOld
-     *      The old service name
-     *
-     * @param {string} nameNew
-     *      The new service name
-     */
-    ServiceManager.prototype.renameService = function(nameOld, nameNew)
-    {
-        if (!this.issetService(nameOld)) {
-            Subclass.Error.create('Trying to rename non existent service "' + nameOld + '".');
-        }
-        if (!nameNew || typeof nameNew != 'string') {
-            Subclass.Error.create('InvalidError')
-                .argument('the new service name', false)
-                .expected('a string')
-                .received(nameNew)
-                .apply()
-            ;
-        }
-        var moduleNames = this.getServiceLocations(nameOld);
-
-        for (var i = 0; i < moduleNames.length; i++) {
-            var module = Subclass.getModule(moduleNames[i]);
-            var serviceManager = module.getServiceManager();
-            var services = serviceManager.getServices(true);
-            var service = services[nameOld];
-
-            if (!service) {
-                Subclass.Error.create(
-                    'The work of method ' +
-                    '"Subclass.Service.ServiceManager#getServiceLocations" is incorrect.'
-                );
-            }
-            delete services[nameOld];
-            services[nameNew] = service;
-            service.setName(nameNew);
-        }
+        return this.getFactory().getService(serviceDef);
     };
 
     /**
      * Checks whether service with specified name was ever registered
      *
-     * @method issetService
+     * @method isset
      * @memberOf Subclass.Service.ServiceManager.prototype
      *
      * @param {string} serviceName
@@ -534,7 +534,7 @@ Subclass.Service.ServiceManager = function()
      *
      * @returns {boolean}
      */
-    ServiceManager.prototype.issetService = function(serviceName, privateServices)
+    ServiceManager.prototype.isset = function(serviceName, privateServices)
     {
         return !!this.getServices(privateServices)[serviceName];
     };

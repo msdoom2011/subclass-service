@@ -58,28 +58,28 @@ Subclass.Service.Extension.ModuleAPIExtension = function() {
     };
 
     /**
-    * The same as the {@link Subclass.Service.ServiceManager#getService}
+    * The same as the {@link Subclass.Service.ServiceManager#get}
     *
     * @method getService
     * @memberOf Subclass.ModuleAPI.prototype
     */
     ModuleAPI.prototype.getService = function()
     {
-        return this.getModule().getServiceManager().getService.apply(
+        return this.getModule().getServiceManager().get.apply(
             this.getModule().getServiceManager(),
             arguments
         );
     };
 
     /**
-     * The same as the {@link Subclass.Service.ServiceManager#issetService}
+     * The same as the {@link Subclass.Service.ServiceManager#isset}
      *
      * @method issetService
      * @memberOf Subclass.ModuleAPI.prototype
      */
     ModuleAPI.prototype.issetService = function()
     {
-        return this.getModule().getServiceManager().issetService.apply(
+        return this.getModule().getServiceManager().isset.apply(
             this.getModule().getServiceManager(),
             arguments
         );

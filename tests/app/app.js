@@ -38,7 +38,7 @@ var app = Subclass.createModule("app", ['appFirstPlugin'], {
         }
     },
     onSetup: function(evt) {
-        var searchEngine = this.getServiceManager().getServiceDefinition('search_engine_bad_name');
+        var searchEngine = this.getServiceManager().getDefinition('search_engine_bad_name');
             searchEngine.rename('search_engine');
     }
 });

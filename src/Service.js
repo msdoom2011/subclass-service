@@ -169,7 +169,7 @@
  *
  * singleton   {boolean}   opt   true    Tells whether current service will returns
  *                                       new instance every time you trying to get
- *                                       it using serviceManager.getService()
+ *                                       it using serviceManager.get()
  *                                       method call.
  *
  * tags        {Array}     opt   []      An array of the service names. Uses in cases
@@ -369,7 +369,7 @@ Subclass.Service.Service = (function()
      */
     Service.prototype.rename = function(name)
     {
-        this.getServiceManager().renameService(this.getName(), name);
+        this.getServiceManager().rename(this.getName(), name);
     };
 
     /**
@@ -387,7 +387,7 @@ Subclass.Service.Service = (function()
 
     /**
      * Creates and returns instance of service class.<br />
-     * The alias of method {@link Subclass.Service.ServiceManager#getService}
+     * The alias of method {@link Subclass.Service.ServiceManager#get}
      *
      * @method createInstance
      * @memberOf Subclass.Service.Service.prototype
@@ -397,7 +397,7 @@ Subclass.Service.Service = (function()
     Service.prototype.createInstance = function()
     {
         return this.getServiceManager()
-            .getServiceFactory()
+            .getFactory()
             .getService(this)
         ;
     };
@@ -1178,7 +1178,7 @@ Subclass.Service.Service = (function()
                 if (chain.indexOf(serviceName) > 0) {
                     return;
                 }
-                var service = serviceManager.getServiceDefinition(serviceName);
+                var service = serviceManager.getDefinition(serviceName);
                     chain.concat(service.validateDefinition(chain));
             }
         }

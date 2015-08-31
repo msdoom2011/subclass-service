@@ -39,7 +39,7 @@ Subclass.Parser.ServiceParser = function()
             return this.getParserManager()
                 .getModule()
                 .getServiceManager()
-                .getService(serviceName)
+                .get(serviceName)
             ;
         }
     };

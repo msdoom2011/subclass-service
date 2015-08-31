@@ -22,7 +22,7 @@ describe("Checking services", function() {
         var searchAnother = app.getService('search');
 
         //console.log(Object.keys(app.getServiceManager().getServices()));
-        //console.log(app.getServiceManager().getServicesByTag('search'));
+        //console.log(app.getServiceManager().findByTag('search'));
 
 
         expect(search.getMode()).toBe('dev');

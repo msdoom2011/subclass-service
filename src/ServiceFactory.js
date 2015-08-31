@@ -152,7 +152,7 @@ Subclass.Service.ServiceFactory = (function()
         // Processing tags
 
         if (classInst.isImplements('Subclass/Service/TaggableInterface')) {
-            var taggedServices = serviceManager.getServicesByTag(
+            var taggedServices = serviceManager.findByTag(
                 serviceDefinition.getName()
             );
             classInst.processTaggedServices(taggedServices);
