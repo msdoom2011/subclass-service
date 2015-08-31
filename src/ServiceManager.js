@@ -488,7 +488,7 @@ Subclass.Service.ServiceManager = function()
         if (serviceDefinition.className) {
             //var className = service.normalizeClassName(serviceDefinition.className);
             var className = parserManager.parse(serviceDefinition.className);
-            classManager.loadClass(className);
+            classManager.load(className);
         }
 
         return service;

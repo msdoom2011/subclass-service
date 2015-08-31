@@ -2,7 +2,7 @@
  * @class
  * @name Subclass.Service.TaggableInterface
  */
-Subclass.ClassManager.registerClass("Interface", "Subclass/Service/TaggableInterface", {
+Subclass.ClassManager.register("Interface", "Subclass/Service/TaggableInterface", {
 
     /**
      * Processes tagged services in the way it needs

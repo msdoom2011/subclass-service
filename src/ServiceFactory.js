@@ -131,7 +131,7 @@ Subclass.Service.ServiceFactory = (function()
 
         // Creating class instance
 
-        var classDef = classManager.getClass(serviceDefinition.getClassName());
+        var classDef = classManager.get(serviceDefinition.getClassName());
         var classArguments = serviceDefinition.normalizeArguments(serviceDefinition.getArguments());
         var classInst = classDef.createInstance.apply(classDef, classArguments);
 
