@@ -18,6 +18,7 @@ module.exports = function(config) {
 
       // Src Files
       "vendors/subclass.js",
+      "vendors/subclass-instance.js",
       "vendors/subclass-parameter.js",
       "src/ServiceManager.js",
       "src/Parser/**/*.js",

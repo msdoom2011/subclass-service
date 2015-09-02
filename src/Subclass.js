@@ -23,7 +23,10 @@ Subclass.registerPlugin(function() {
      */
     ServicePlugin.getDependencies = function()
     {
-        return ['SubclassParameter'];
+        return [
+            'SubclassInstance',
+            'SubclassParameter'
+        ];
     };
 
     return ServicePlugin;
