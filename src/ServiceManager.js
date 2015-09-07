@@ -50,14 +50,14 @@ Subclass.Service.ServiceManager = function()
          * @private
          */
         this._module = module;
-
-        /**
-         * Instance of service factory
-         *
-         * @type {Subclass.Service.ServiceFactory}
-         * @private
-         */
-        this._serviceFactory = Subclass.Tools.createClassInstance(Subclass.Service.ServiceFactory, this);
+        //
+        ///**
+        // * Instance of service factory
+        // *
+        // * @type {Subclass.Service.ServiceFactory}
+        // * @private
+        // */
+        //this._serviceFactory = Subclass.Tools.createClassInstance(Subclass.Service.ServiceFactory, this);
 
         /**
          * List of properties
@@ -92,12 +92,14 @@ Subclass.Service.ServiceManager = function()
 
             if (module.isRoot()) {
                 var serviceManager = module.getServiceManager();
-                serviceManager.register('service_manager', module.getServiceManager());
-                serviceManager.register('class_manager', module.getClassManager());
-                serviceManager.register('event_manager', module.getEventManager());
-                serviceManager.register('load_manager', module.getEventManager());
-                serviceManager.register('settings_manager', module.getEventManager());
-                serviceManager.register('module_storage', module.getEventManager());
+                serviceManager.register('module');
+                serviceManager.register('service_container');
+                serviceManager.register('service_manager');
+                serviceManager.register('class_manager');
+                serviceManager.register('event_manager');
+                serviceManager.register('load_manager');
+                serviceManager.register('settings_manager');
+                serviceManager.register('module_storage');
             }
         });
 
@@ -122,18 +124,18 @@ Subclass.Service.ServiceManager = function()
     {
         return this._module;
     };
-
-    /**
-     * Returns the service factory instance
-     *
-     * @method getModule
-     * @memberOf Subclass.Service.ServiceManager.prototype
-     * @returns {Subclass.Service.ServiceFactory}
-     */
-    ServiceManager.prototype.getFactory = function()
-    {
-        return this._serviceFactory;
-    };
+    //
+    ///**
+    // * Returns the service factory instance
+    // *
+    // * @method getModule
+    // * @memberOf Subclass.Service.ServiceManager.prototype
+    // * @returns {Subclass.Service.ServiceFactory}
+    // */
+    //ServiceManager.prototype.getFactory = function()
+    //{
+    //    return this._serviceFactory;
+    //};
 
     /**
      * Normalizes services.<br /><br />
@@ -236,7 +238,8 @@ Subclass.Service.ServiceManager = function()
             var definition = serviceDefinitions[serviceName].getDefinition();
 
             if (parentServiceName) {
-                var parentServiceDefinition = this.getDefinition(parentServiceName);
+                //var parentServiceDefinition = this.getDefinition(parentServiceName);
+                var parentServiceDefinition = this.get(parentServiceName);
                 var parentDefinition = Subclass.Tools.copy(parentServiceDefinition.getDefinition());
 
                 if (!definition.abstract) {
@@ -304,26 +307,6 @@ Subclass.Service.ServiceManager = function()
         });
 
         return serviceDefinitions;
-    };
-
-    /**
-     * Returns service definition instance
-     *
-     * @method getDefinition
-     * @memberOf Subclass.Service.ServiceManager.prototype
-     *
-     * @param {string} serviceName
-     *      The service name which definition you want to get
-     *
-     * @returns {Subclass.Service.Service}
-     *      The service definition instance which contains the service configuration data
-     */
-    ServiceManager.prototype.getDefinition = function(serviceName)
-    {
-        if (!this.isset(serviceName)) {
-            Subclass.Error.create('Service with name "' + serviceName + '" is not exists.');
-        }
-        return this.getServices()[serviceName];
     };
 
     /**
@@ -464,59 +447,104 @@ Subclass.Service.ServiceManager = function()
      */
     ServiceManager.prototype.register = function(serviceName, serviceDefinition)
     {
-        var readyServiceInstance = null;
+        //var readyServiceInstance = null;
 
         if (this.getModule().isReady()) {
             Subclass.Error.create('Can\'t define new services when module is ready.');
         }
-        if (!Subclass.Tools.isPlainObject(serviceDefinition)) {
-            readyServiceInstance = serviceDefinition;
+        //if (!Subclass.Tools.isPlainObject(serviceDefinition)) {
+        if (!serviceDefinition) {
+            //readyServiceInstance = serviceDefinition;
             serviceDefinition = {};
         }
 
-        var service = Subclass.Tools.createClassInstance(Subclass.Service.Service, this, serviceName, serviceDefinition);
+        var service = Subclass.Tools.createClassInstance(
+            Subclass.Service.Service, this, serviceName, serviceDefinition
+        );
         this._services[serviceName] = service;
 
         var module = this.getModule();
         var classManager = module.getClassManager();
-        var parserManager = module.getParserManager();
+        //var parserManager = module.getParserManager();
 
-        if (readyServiceInstance) {
-            service.setInstance(readyServiceInstance);
+        //if (readyServiceInstance) {
+        if (Subclass.Tools.isEmpty(serviceDefinition)) {
+            //service.setInstance(readyServiceInstance);
             service.initialize();
         }
         if (serviceDefinition.className) {
-            //var className = service.normalizeClassName(serviceDefinition.className);
-            var className = parserManager.parse(serviceDefinition.className);
+            //var className = parserManager.parse(serviceDefinition.className);
+            var className = service.getClassName();
             classManager.load(className);
         }
 
         return service;
     };
+    //
+    ///**
+    //* Registers
+    //* @param serviceName
+    //* @param serviceInstance
+    //* @returns {*}
+    //*/
+    //ServiceManager.prototype.registerBasic = function(serviceName, serviceInstance)
+    //{
+    //    if (this.getModule().isReady()) {
+    //        Subclass.Error.create('Can\'t define new services when module is ready.');
+    //    }
+    //    var service = Subclass.Tools.createClassInstance(
+    //        Subclass.Service.Service, this, serviceName, serviceInstance
+    //    );
+    //    this._services[serviceName] = service;
+    //    service.initialize();
+    //
+    //    return service;
+    //};
+
+    ///**
+    // * Returns service class instance.<br /><br />
+    // *
+    // * Depending on singleton marker will be returned the same
+    // * or the new instance every time you request the service.
+    // *
+    // * @method get
+    // * @memberOf Subclass.Service.ServiceManager.prototype
+    // *
+    // * @param {string} serviceName
+    // *      The name of service which instance you want to get
+    // *
+    // * @returns {Object}
+    // *      Returns the instance of class specified in the "className" service option
+    // */
+    //ServiceManager.prototype.get = function(serviceName)
+    //{
+    //    if (!this.isset(serviceName)) {
+    //        Subclass.Error.create('Service with name "' + serviceName + '" is not exists.');
+    //    }
+    //    var serviceDef = this.getServices()[serviceName];
+    //
+    //    return this.getFactory().getService(serviceDef);
+    //};
 
     /**
-     * Returns service class instance.<br /><br />
-     *
-     * Depending on singleton marker will be returned the same
-     * or the new instance every time you request the service.
+     * Returns service definition instance
      *
      * @method get
      * @memberOf Subclass.Service.ServiceManager.prototype
      *
      * @param {string} serviceName
-     *      The name of service which instance you want to get
+     *      The service name which definition you want to get
      *
-     * @returns {Object}
-     *      Returns the instance of class specified in the "className" service option
+     * @returns {Subclass.Service.Service}
+     *      The service definition instance which contains the service configuration data
      */
+    //ServiceManager.prototype.getDefinition = function(serviceName)
     ServiceManager.prototype.get = function(serviceName)
     {
         if (!this.isset(serviceName)) {
             Subclass.Error.create('Service with name "' + serviceName + '" is not exists.');
         }
-        var serviceDef = this.getServices()[serviceName];
-
-        return this.getFactory().getService(serviceDef);
+        return this.getServices()[serviceName];
     };
 
     /**

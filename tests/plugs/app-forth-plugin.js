@@ -11,7 +11,7 @@ var appForthPlugin = Subclass.createModule('appForthPlugin', {
     },
     onSetup: function(evt)
     {
-        var searchService = this.getServiceManager().getDefinition('search');
+        var searchService = this.getServiceManager().get('search');
         searchService.addArgument(2, 'extraArg');
         searchService.addCall('extraMethod');
     }

@@ -20,16 +20,15 @@ app.registerClass("Search/SearchService", {
     {
         for (var i = 0; i < taggedServices.length; i++) {
             var service = taggedServices[i];
-            var serviceInstance = service.createInstance();
-            var serviceName = serviceInstance.getName();
+            var serviceName = service.getName();
 
-            if (!serviceInstance.isImplements('Search/SearchEngineInterface')) {
+            if (!service.isImplements('Search/SearchEngineInterface')) {
                 this._error = true;
                 continue;
             }
             this.addEngine(
                 serviceName,
-                service.createInstance()
+                service
             );
         }
     },

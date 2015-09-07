@@ -27,6 +27,9 @@ Subclass.Parser.ServiceParser = function()
         parse: function(string)
         {
             var serviceName;
+            var parserManager = this.getParserManager();
+            var moduleInstance = parserManager.getModuleInstance();
+            var container = moduleInstance.getContainer();
 
             if (
                 typeof string != 'string'
@@ -36,11 +39,12 @@ Subclass.Parser.ServiceParser = function()
             }
             serviceName = this.getParserManager().parse(serviceName[1]);
 
-            return this.getParserManager()
-                .getModule()
-                .getServiceManager()
-                .get(serviceName)
-            ;
+            //return this.getParserManager()
+            //    .getModule()
+            //    .getServiceManager()
+            //    .get(serviceName)
+            //;
+            return container.get(serviceName);
         }
     };
 

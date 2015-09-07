@@ -24,6 +24,7 @@ Subclass.registerPlugin(function() {
     ServicePlugin.getDependencies = function()
     {
         return [
+            'SubclassParser',
             'SubclassInstance',
             'SubclassParameter'
         ];

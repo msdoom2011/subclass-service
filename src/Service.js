@@ -386,71 +386,6 @@ Subclass.Service.Service = (function()
     };
 
     /**
-     * Creates and returns instance of service class.<br />
-     * The alias of method {@link Subclass.Service.ServiceManager#get}
-     *
-     * @method createInstance
-     * @memberOf Subclass.Service.Service.prototype
-     *
-     * @returns {Object}
-     */
-    Service.prototype.createInstance = function()
-    {
-        return this.getServiceManager()
-            .getFactory()
-            .getService(this)
-        ;
-    };
-
-    /**
-     * Sets service class instance after it was created.<br /><br />
-     *
-     * If the service was configured as singleton then this set instance
-     * will be returned every time when the instance of service will be requested..
-     *
-     * @method setInstance
-     * @memberOf Subclass.Service.Service.prototype
-     *
-     * @throws {Error}
-     *      Throws error if was attempt to create an instance of abstract service
-     *
-     * @param {Object} instance
-     *      The instance of the service class
-     */
-    Service.prototype.setInstance = function(instance)
-    {
-        if (this.getAbstract()) {
-            Subclass.Error.create('AbstractService')
-                .service(this.getName())
-                .apply()
-            ;
-        }
-        this._instance = instance;
-    };
-
-    /**
-     * Returns the service class instance that was created earlier
-     *
-     * @method getInstance
-     * @memberOf Subclass.Service.Service.prototype
-     *
-     * @throws {Error}
-     *      Throws error if trying to get instance of abstract service class
-     *
-     * @returns {Object}
-     */
-    Service.prototype.getInstance = function()
-    {
-        if (this.getAbstract()) {
-            Subclass.Error.create('AbstractService')
-                .service(this.getName())
-                .apply()
-            ;
-        }
-        return this._instance;
-    };
-
-    /**
      * Validates "abstract" option value
      *
      * @method validateAbstract
@@ -642,11 +577,30 @@ Subclass.Service.Service = (function()
      */
     Service.prototype.getClassName = function()
     {
-        //return this.normalizeClassName(this.getDefinition().className);
-        var parserManager = this.getServiceManager().getModule().getParserManager();
-        return parserManager.parse(this.getDefinition().className);
+        return this.normalizeClassName(this.getDefinition().className);
     };
 
+    /**
+     * Normalizes name of service class
+     *
+     * @param {string} className
+     *      The name of service class
+     *
+     * @returns {string}
+     */
+    Service.prototype.normalizeClassName = function(className)
+    {
+        var paramRegExp = /%([^%]+)%/i;
+
+        if (paramRegExp.test(className)) {
+            var paramManager = this.getServiceManager().getModule().getParameterManager();
+            var paramName = className.match(paramRegExp)[1];
+            var param = paramManager.getParameter(paramName);
+
+            className = className.replace(paramRegExp, param);
+        }
+        return className;
+    };
     /**
      * Validates the "arguments" option value
      *
@@ -746,23 +700,21 @@ Subclass.Service.Service = (function()
      * @method normalizeArguments
      * @memberOf Subclass.Service.Service.prototype
      *
-     * @param args
+     * @param {Array} args
      *      An array of arguments for the service class constructor
      *      or its methods
+     *
+     * @param {Subclass.Parser.ParserManager} parser
      */
-    Service.prototype.normalizeArguments = function(args)
+    Service.prototype.normalizeArguments = function(args, parser)
     {
-        var serviceManager = this.getServiceManager();
-        var parserManager = serviceManager.getModule().getParserManager();
-        var parameterManager = serviceManager.getModule().getParameterManager();
-
         if (!args) {
             return [];
         }
         args = Subclass.Tools.extend([], args);
 
         for (var i = 0; i < args.length; i++) {
-            args[i] = parserManager.parse(args[i]);
+            args[i] = parser.parse(args[i]);
         }
         return args;
     };
@@ -906,9 +858,11 @@ Subclass.Service.Service = (function()
      * @param {Object.<Array>} calls
      *      The object with method names and its arguments
      *
+     * @param {Subclass.Parser.ParserManager} parser
+     *
      * @returns {Object.<Array>}
      */
-    Service.prototype.normalizeCalls = function(calls)
+    Service.prototype.normalizeCalls = function(calls, parser)
     {
         if (!calls) {
             return {};
@@ -920,7 +874,7 @@ Subclass.Service.Service = (function()
                 if (!calls.hasOwnProperty(methodName)) {
                     continue;
                 }
-                calls[methodName] = this.normalizeArguments(calls[methodName]);
+                calls[methodName] = this.normalizeArguments(calls[methodName], parser);
             }
         }
         return calls;
@@ -1178,8 +1132,8 @@ Subclass.Service.Service = (function()
                 if (chain.indexOf(serviceName) > 0) {
                     return;
                 }
-                var service = serviceManager.getDefinition(serviceName);
-                    chain.concat(service.validateDefinition(chain));
+                var service = serviceManager.get(serviceName);
+                chain.concat(service.validateDefinition(chain));
             }
         }
 
