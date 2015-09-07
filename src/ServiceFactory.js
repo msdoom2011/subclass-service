@@ -31,20 +31,20 @@ Subclass.Service.ServiceFactory = (function()
          * @type {Subclass.Service.ServiceContainer}
          * @private
          */
-        this._container = container;
+        this._serviceContainer = container;
     }
 
     /**
      * Returns service container instance
      *
-     * @method getContainer
+     * @method getServiceContainer
      * @memberOf Subclass.Service.ServiceFactory.prototype
      *
      * @returns {Subclass.Service.ServiceContainer}
      */
-    ServiceFactory.prototype.getContainer = function()
+    ServiceFactory.prototype.getServiceContainer = function()
     {
-        return this._container;
+        return this._serviceContainer;
     };
 
     /**
@@ -64,7 +64,7 @@ Subclass.Service.ServiceFactory = (function()
             ;
         }
 
-        var container = this.getContainer();
+        var container = this.getServiceContainer();
         var moduleInstance = container.getModuleInstance();
         var parserManager = moduleInstance.getParser();
         var serviceManager = container.getServiceManager();

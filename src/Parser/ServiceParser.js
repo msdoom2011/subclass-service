@@ -29,7 +29,7 @@ Subclass.Parser.ServiceParser = function()
             var serviceName;
             var parserManager = this.getParserManager();
             var moduleInstance = parserManager.getModuleInstance();
-            var container = moduleInstance.getContainer();
+            var container = moduleInstance.getServiceContainer();
 
             if (
                 typeof string != 'string'

@@ -28,7 +28,7 @@ Subclass.Service.Extension.ModuleInstanceExtension = function() {
              * @type {Subclass.Service.ServiceContainer}
              * @private
              */
-            this._container = Subclass.Tools.createClassInstance(Subclass.Service.ServiceContainer, this);
+            this._serviceContainer = Subclass.Tools.createClassInstance(Subclass.Service.ServiceContainer, this);
         });
     };
 
@@ -44,9 +44,9 @@ Subclass.Service.Extension.ModuleInstanceExtension = function() {
      *
      * @returns {Subclass.Service.ServiceContainer}
      */
-    ModuleInstance.prototype.getContainer = function()
+    ModuleInstance.prototype.getServiceContainer = function()
     {
-        return this._container;
+        return this._serviceContainer;
     };
 
 

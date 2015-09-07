@@ -9,7 +9,7 @@ Subclass.Service.ServiceContainer = function()
         if (!moduleInstance || !(moduleInstance instanceof Subclass.ModuleInstance)) {
             Subclass.Error.create('InvalidArgument')
                 .argument('the module instance', false)
-                .expected('an instance of class Subclass.ModuleInstance')
+                .expected('an instance of class "Subclass.ModuleInstance"')
                 .received(moduleInstance)
                 .apply()
             ;
@@ -45,17 +45,7 @@ Subclass.Service.ServiceContainer = function()
          * @type {Object.<Object>}
          * @private
          */
-        this._services = {
-            module: this._module,
-            service_container: this,
-            service_manager: this._module.getServiceManager(),
-            parameter_manager: this._module.getParameterManager(),
-            class_manager: this._module.getClassManager(),
-            event_manager: this._module.getEventManager(),
-            load_manager: this._module.getEventManager(),
-            settings_manager: this._module.getEventManager(),
-            module_storage: this._module.getEventManager()
-        };
+        this._services = {};
 
         /**
          * List of registered events
@@ -65,12 +55,19 @@ Subclass.Service.ServiceContainer = function()
          */
         this._events = [];
 
+        /**
+         * Indicates whether service manager was initialized
+         *
+         * @type {boolean}
+         * @private
+         */
+        this._initialized = false;
+
 
         // Initialization operations
 
         this.registerEvent('onInitialize');
-        this.initializeExtensions();
-        this.getEvent('onInitialize').trigger();
+        this.initialize();
     }
 
     ServiceContainer.$parent = Subclass.Extendable;
@@ -78,6 +75,47 @@ Subclass.Service.ServiceContainer = function()
     ServiceContainer.$mixins = [Subclass.Event.EventableMixin];
 
     ServiceContainer.prototype = {
+
+        /**
+         * Initializes service container
+         */
+        initialize: function()
+        {
+            if (this.isInitialized()) {
+                Subclass.Error.create('Service container is already initialized!')
+            }
+
+            // Adding service instances
+
+            Subclass.Tools.extend(this._services, {
+                module: this._module,
+                service_container: this,
+                service_manager: this._module.getServiceManager(),
+                parameter_container: this._moduleInstance.getParameterContainer(),
+                parameter_manager: this._module.getParameterManager(),
+                class_manager: this._module.getClassManager(),
+                event_manager: this._module.getEventManager(),
+                load_manager: this._module.getEventManager(),
+                settings_manager: this._module.getEventManager(),
+                module_storage: this._module.getEventManager()
+            });
+
+            // Initializing
+
+            this.initializeExtensions();
+            this.getEvent('onInitialize').trigger();
+            this._initialized = true;
+        },
+
+        /**
+         * Reports whether service container was initialized
+         *
+         * @returns {boolean}
+         */
+        isInitialized: function()
+        {
+            return this._initialized;
+        },
 
         /**
          * Returns module definition instance
@@ -107,27 +145,6 @@ Subclass.Service.ServiceContainer = function()
         getServiceManager: function()
         {
             return this.getModule().getServiceManager();
-        },
-
-        /**
-         * Returns instance of parameter manager
-         *
-         * @returns {*|Subclass.Parameter.ParameterManager}
-         */
-        getParameterManager: function()
-        {
-            return this.getModule().getParameterManager();
-        },
-
-        /**
-         * Returns value of parameter with specified name
-         *
-         * @param {string} paramName
-         * @returns {*}
-         */
-        getParameter: function(paramName)
-        {
-            return this.getParameterManager().getParameter(paramName);
         },
 
         /**
@@ -179,18 +196,7 @@ Subclass.Service.ServiceContainer = function()
          */
         getServices: function()
         {
-            var registeredServices = this.getServiceManager().getServices();
-            var containerServices = this._services;
-
-            for (var serviceName in containerServices) {
-                if (
-                    containerServices.hasOwnProperty(serviceName)
-                    && !registeredServices.hasOwnProperty(serviceName)
-                ) {
-                    registeredServices[serviceName] = containerServices[serviceName];
-                }
-            }
-            return registeredServices;
+            return this.getServiceManager().getServices();
         },
 
         /**

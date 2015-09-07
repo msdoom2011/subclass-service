@@ -87,6 +87,8 @@ Subclass.Service.ServiceManager = function()
                 serviceManager.register('module');
                 serviceManager.register('service_container');
                 serviceManager.register('service_manager');
+                serviceManager.register('parameter_container');
+                serviceManager.register('parameter_manager');
                 serviceManager.register('class_manager');
                 serviceManager.register('event_manager');
                 serviceManager.register('load_manager');
@@ -421,7 +423,7 @@ Subclass.Service.ServiceManager = function()
      * @param {string} serviceName
      *      The name of service
      *
-     * @param {Object} serviceDefinition
+     * @param {Object} [serviceDefinition]
      *      The service configuration
      */
     ServiceManager.prototype.register = function(serviceName, serviceDefinition)

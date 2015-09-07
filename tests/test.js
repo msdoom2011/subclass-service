@@ -13,7 +13,7 @@ describe("Checking services", function() {
 
     it ("", function() {
         appInst = app.createInstance();
-        container = appInst.getContainer();
+        container = appInst.getServiceContainer();
     });
 
     it ("existence", function() {
