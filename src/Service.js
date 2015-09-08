@@ -354,8 +354,10 @@ Subclass.Service.Service = (function()
      */
     Service.prototype.initialize = function()
     {
-        this.validateDefinition();
-        this.processDefinition();
+        if (!this.isInitialized()) {
+            this.validateDefinition();
+            this.processDefinition();
+        }
     };
 
     /**
