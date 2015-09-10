@@ -86,14 +86,7 @@ Subclass.Service.ServiceManager = function()
                 var serviceManager = module.getServiceManager();
                 serviceManager.register('module');
                 serviceManager.register('service_container');
-                serviceManager.register('service_manager');
                 serviceManager.register('parameter_container');
-                serviceManager.register('parameter_manager');
-                serviceManager.register('class_manager');
-                serviceManager.register('event_manager');
-                serviceManager.register('load_manager');
-                serviceManager.register('settings_manager');
-                serviceManager.register('module_storage');
             }
         });
 

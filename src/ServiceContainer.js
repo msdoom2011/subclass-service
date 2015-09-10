@@ -90,14 +90,7 @@ Subclass.Service.ServiceContainer = function()
             Subclass.Tools.extend(this._services, {
                 module: this._module,
                 service_container: this,
-                service_manager: this._module.getServiceManager(),
-                parameter_container: this._moduleInstance.getParameterContainer(),
-                parameter_manager: this._module.getParameterManager(),
-                class_manager: this._module.getClassManager(),
-                event_manager: this._module.getEventManager(),
-                load_manager: this._module.getEventManager(),
-                settings_manager: this._module.getEventManager(),
-                module_storage: this._module.getEventManager()
+                parameter_container: this._moduleInstance.getParameterContainer()
             });
 
             // Initializing

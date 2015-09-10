@@ -597,7 +597,7 @@ Subclass.Service.Service = (function()
         if (paramRegExp.test(className)) {
             var paramManager = this.getServiceManager().getModule().getParameterManager();
             var paramName = className.match(paramRegExp)[1];
-            var param = paramManager.getParameter(paramName);
+            var param = paramManager.get(paramName);
 
             className = className.replace(paramRegExp, param);
         }
