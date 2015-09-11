@@ -206,9 +206,34 @@ Subclass.Service.ServiceContainer = function()
             var service = this.getServiceManager().get(serviceName);
             var serviceInst = this._serviceFactory.createService(service);
 
+            // Saving service instance
+
             if (service.isSingleton()) {
                 this.setServiceInstance(serviceName, serviceInst);
             }
+
+            // Processing calls after service instance was created and saved
+
+            var parserManager = this.getModuleInstance().getParser();
+            var calls = service.normalizeCalls(service.getCalls(), parserManager);
+
+            for (var methodName in calls) {
+                if (!calls.hasOwnProperty(methodName)) {
+                    continue;
+                }
+                serviceInst[methodName].apply(
+                    serviceInst,
+                    calls[methodName]
+                );
+            }
+
+            // Processing tags after service instance was created and saved
+
+            if (serviceInst.isImplements('Subclass/Service/TaggableInterface')) {
+                var taggedServiceInstances = this.findByTag(service.getName());
+                serviceInst.processTaggedServices(taggedServiceInstances);
+            }
+
             return serviceInst;
         },
 

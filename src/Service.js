@@ -780,6 +780,7 @@ Subclass.Service.Service = (function()
                 throw e;
             }
         }
+
         return true;
     };
 
@@ -1122,29 +1123,61 @@ Subclass.Service.Service = (function()
             chain = arguments[0];
         }
 
-        function validateArguments(arg)
+        // Checking methods existence which are specified in the calls option
+
+        var className = this.getClassName();
+
+        if (className) {
+            var classManager = serviceManager.getModule().getClassManager();
+            var classDef = classManager.get(className).getDefinition();
+
+            for (methodName in calls) {
+                if (calls.hasOwnProperty(methodName)) {
+                    if (!classDef.getData().hasOwnProperty(methodName)) {
+                        Subclass.Error.create(
+                            'Specified invalid "calls" option in the service "' + this.getName() + '". ' +
+                            'The method "' + methodName + '" does not exist in class "' + className + '".'
+                        );
+                    }
+                }
+            }
+        }
+
+        // Validating for circular dependency injection in "calls" and "arguments" service options
+
+        function validateArguments(arg, argType)
         {
             if (typeof arg == 'string' && arg.match(/^@[a-z_0-9]+$/i)) {
                 var serviceName = arg.substr(1);
+                var service = serviceManager.get(serviceName);
 
-                if (tags.indexOf(serviceName) >= 0 || serviceName == chain[0]) {
+                if ((
+                        !service.isSingleton()
+                        && tags.indexOf(serviceName) >= 0
+                    ) || (
+                        argType != 'calls'
+                        && !service.isSingleton()
+                        && serviceName == chain[0]
+                    ) || (
+                        argType == 'arguments'
+                        && serviceName == chain[0]
+                    )
+                ) {
                     Subclass.Error.create(
                         'Can\'t create instance of service "' + $this.getName() + '". ' +
                         'Circular dependency injection was found.'
                     );
                 }
-                if (chain.indexOf(serviceName) > 0) {
-                    return;
+                if (chain.indexOf(serviceName) <= 0) {
+                    chain.concat(service.validateDefinition(chain));
                 }
-                var service = serviceManager.get(serviceName);
-                chain.concat(service.validateDefinition(chain));
             }
         }
 
         // Validating arguments
 
         for (var i = 0; i < args.length; i++) {
-            validateArguments(args[i]);
+            validateArguments(args[i], 'arguments');
         }
 
         // Validating calls
@@ -1152,7 +1185,7 @@ Subclass.Service.Service = (function()
         for (var methodName in calls) {
             if (calls.hasOwnProperty(methodName)) {
                 for (i = 0; i < calls[methodName].length; i++) {
-                    validateArguments(calls[methodName][i]);
+                    validateArguments(calls[methodName][i], 'calls');
                 }
             }
         }

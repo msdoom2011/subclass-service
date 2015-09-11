@@ -71,36 +71,15 @@ Subclass.Service.ServiceFactory = (function()
         var classManager = serviceManager.getModule().getClassManager();
 
         // Initializing service
+
         service.initialize();
 
         // Creating class instance
 
         var classDef = classManager.get(service.getClassName());
         var classArguments = service.normalizeArguments(service.getArguments(), parserManager);
-        var classInst = classDef.createInstance.apply(classDef, classArguments);
 
-        // Processing calls
-
-        var calls = service.normalizeCalls(service.getCalls(), parserManager);
-
-        for (var methodName in calls) {
-            if (!calls.hasOwnProperty(methodName)) {
-                continue;
-            }
-            classInst[methodName].apply(
-                classInst,
-                calls[methodName]
-            );
-        }
-
-        // Processing tags
-
-        if (classInst.isImplements('Subclass/Service/TaggableInterface')) {
-            var taggedServiceInstances = container.findByTag(service.getName());
-            classInst.processTaggedServices(taggedServiceInstances);
-        }
-
-        return classInst;
+        return classDef.createInstance.apply(classDef, classArguments);
     };
 
     return ServiceFactory;

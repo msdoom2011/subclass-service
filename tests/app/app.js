@@ -13,9 +13,14 @@ var app = Subclass.createModule("app", ['appFirstPlugin'], {
             className: "%searchClass%",
             arguments: ["%engine%"]
         },
+        // It will be renamed to search_engine in program code late
         search_engine_bad_name: {
             abstract: true,
-            tags: ["search"]
+            arguments: ["@search"],
+            tags: ["search"],
+            calls: {
+                setSearch: ["@search"]
+            }
         },
         search_fail_engine: {
             extends: "search_engine",
