@@ -277,10 +277,12 @@ Subclass.Service.Service = (function()
      */
     Service.prototype.setName = function(name)
     {
-        if (!name || typeof name != 'string' || !name.match(/^[0-9_a-z]+$/i)) {
+        var regExp = /^[0-9_\.a-z]+$/i;
+
+        if (!name || typeof name != 'string' || !name.match(regExp)) {
             Subclass.Error.create('InvalidArgument')
                 .argument('the name of service', false)
-                .expected('a string')
+                .expected('a string and should match regular expression ' + regExp)
                 .received(name)
                 .apply()
             ;
