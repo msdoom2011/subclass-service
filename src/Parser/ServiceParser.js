@@ -33,17 +33,12 @@ Subclass.Parser.ServiceParser = function()
 
             if (
                 typeof string != 'string'
-                || !(serviceName = string.match(/^@([a-z_0-9]+)$/i))
+                || !(serviceName = string.match(/^@([a-z_\.0-9]+)$/i))
             ) {
                 return string;
             }
             serviceName = this.getParserManager().parse(serviceName[1]);
 
-            //return this.getParserManager()
-            //    .getModule()
-            //    .getServiceManager()
-            //    .get(serviceName)
-            //;
             return container.get(serviceName);
         }
     };
