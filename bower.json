@@ -1,11 +1,47 @@
 {
-  "name": "SubclassService",
+  "name": "subclass-service",
   "version": "0.1.0",
   "authors": [
-    "Dmitriy Osipishin | <msdoom2011@gmail.com>"
+    "Dmitry Osipishin | <msdoom2011@gmail.com>"
   ],
   "description": "The plugin for SubclassJS framework which brings ability to define services using dependency injection and defining tagged services which extremely convenient use for services with extendable functionality",
-  "main": "Gruntfile.js",
+  "main": "release/subclass-service.js",
   "license": "MIT",
-  "private": true
+  "keywords": [
+    "subclass",
+    "service",
+    "DI container",
+    "dependency injection",
+    "framework",
+    "js",
+    "class",
+    "inheritance",
+    "abstract class",
+    "reflection API",
+    "mixin",
+    "trait",
+    "structure",
+    "autoloading",
+    "patterns",
+    "OOP"
+  ],
+  "ignore": [
+    "doc",
+    "node_modules",
+    "src",
+    "tests",
+    "**/.*",
+    "Gruntfile.config.json",
+    "Gruntfile.js",
+    "karma.config.js",
+    "package.json",
+    "TODO.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "subclass-framework": "",
+    "subclass-instance": "",
+    "subclass-parser": "",
+    "subclass-parameter": ""
+  }
 }

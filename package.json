@@ -1,14 +1,14 @@
 {
   "name": "SubclassService",
   "version": "0.1.0",
-  "homepage": "https://github.com/msdoom2011/subclassjs",
-  "repository": "git@github.com:msdoom2011/subclassjs.git",
+  "homepage": "https://github.com/msdoom2011/subclass-service",
+  "repository": "git@github.com:msdoom2011/subclass-service.git",
   "description": "The plugin for SubclassJS framework which brings ability to define services using dependency injection and defining tagged services which extremely convenient use for services with extendable functionality",
   "author": {
-    "name": "Dmitriy Osipishin",
+    "name": "Dmitry Osipishin",
     "email": "msdoom2011@gmail.com"
   },
-  "main": "Gruntfile.js",
+  "main": "release/subclass-service.js",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
